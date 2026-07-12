@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
         const pdf = await buildPdf(imageUrls);
 
-        return new Response(pdf, {
+        return new Response(Buffer.from(pdf), {
             headers: {
                 "Content-Type": "application/pdf",
                 "Content-Disposition": `attachment; filename=${slug}.pdf`,
