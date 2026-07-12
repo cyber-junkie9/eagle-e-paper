@@ -1,60 +1,41 @@
 import { NextRequest } from "next/server";
 
 import { getPaperPages } from "@/lib/scrape";
-
 import { buildPdf } from "@/lib/pdf";
+import type { PaperPage } from "@/lib/types";
 
-export async function GET(
-    request: NextRequest
-) {
-
+export async function GET(request: NextRequest) {
     try {
-
-        const slug =
-            request.nextUrl.searchParams.get("slug");
+        const slug = request.nextUrl.searchParams.get("slug");
 
         if (!slug) {
-
-            return new Response(
-                "Missing slug",
-                {
-                    status: 400
-                }
-            );
-
+            return new Response("Missing slug", {
+                status: 400,
+            });
         }
 
-        const pages =
-            await getPaperPages(slug);
+        const pages: PaperPage[] = await getPaperPages(slug);
 
-        const pdf =
-            await buildPdf(
-                pages.map(p => p.image)
-            );
-
-        return new Response(pdf, {
-
-            headers: {
-
-                "Content-Type":
-                    "application/pdf",
-
-                "Content-Disposition":
-                    `attachment; filename=${slug}.pdf`
-
-            }
-
-        });
-
-    } catch (err: any) {
-
-        return new Response(
-            err.message,
-            {
-                status: 500
-            }
+        const imageUrls: string[] = pages.map(
+            (page: PaperPage) => page.image
         );
 
-    }
+        const pdf = await buildPdf(imageUrls);
 
+        return new Response(pdf, {
+            headers: {
+                "Content-Type": "application/pdf",
+                "Content-Disposition": `attachment; filename=${slug}.pdf`,
+            },
+        });
+    } catch (error: unknown) {
+        const message =
+            error instanceof Error
+                ? error.message
+                : "Unknown error";
+
+        return new Response(message, {
+            status: 500,
+        });
+    }
 }
