@@ -1,34 +1,34 @@
 import Link from "next/link";
 import { getPaperPages } from "@/lib/scrape";
+import type { PaperPage } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function PaperPage({
-    params,
-}: {
+interface PageProps {
     params: Promise<{
         slug: string;
     }>;
-}) {
+}
+
+export default async function PaperPage({
+    params,
+}: PageProps) {
 
     const { slug } = await params;
 
-    const pages = await getPaperPages(slug);
+    const pages: PaperPage[] = await getPaperPages(slug);
 
     return (
-
         <main className="container">
 
-            <Link
-                href="/"
-            >
+            <Link href="/">
                 ← Back
             </Link>
 
             <h1
                 style={{
                     marginTop: 20,
-                    marginBottom: 10
+                    marginBottom: 10,
                 }}
             >
                 {slug}
@@ -43,7 +43,7 @@ export default async function PaperPage({
 
             <div className="page-grid">
 
-                {pages.map((page) => (
+                {pages.map((page: PaperPage) => (
 
                     <div
                         key={page.page}
@@ -51,9 +51,7 @@ export default async function PaperPage({
                     >
 
                         <h3>
-
                             Page {page.page}
-
                         </h3>
 
                         <img
@@ -66,7 +64,7 @@ export default async function PaperPage({
                             style={{
                                 marginTop: 15,
                                 display: "flex",
-                                gap: 10
+                                gap: 10,
                             }}
                         >
 
@@ -74,6 +72,7 @@ export default async function PaperPage({
                                 className="paper-btn"
                                 href={page.image}
                                 target="_blank"
+                                rel="noopener noreferrer"
                             >
                                 View
                             </a>
@@ -95,7 +94,5 @@ export default async function PaperPage({
             </div>
 
         </main>
-
     );
-
 }
