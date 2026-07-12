@@ -14,17 +14,26 @@ export async function GET(request: NextRequest) {
         }
 
         const pages: PaperPage[] = await getPaperPages(slug);
-        const imageUrls: string[] = pages.map((page: PaperPage) => page.image);
+
+        const imageUrls = pages.map((page) => page.image);
+
         const pdf = await buildPdf(imageUrls);
 
-        return new Response(pdf, {
+        // Convert Uint8Array -> Blob
+        const blob = new Blob([pdf], {
+            type: "application/pdf",
+        });
+
+        return new Response(blob, {
             headers: {
                 "Content-Type": "application/pdf",
-                "Content-Disposition": `attachment; filename=${slug}.pdf`,
+                "Content-Disposition": `attachment; filename="${slug}.pdf"`,
             },
         });
-    } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : "Unknown error";
-        return new Response(message, { status: 500 });
+    } catch (error) {
+        return new Response(
+            error instanceof Error ? error.message : "Unknown error",
+            { status: 500 }
+        );
     }
 }
