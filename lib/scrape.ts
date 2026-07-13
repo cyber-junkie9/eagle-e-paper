@@ -62,6 +62,6 @@ export async function getPaperPages(slug: string): Promise<PaperPage[]> {
     return config.pages.map((p, i) => ({
         page: i + 1,
         image: p.src,
-        thumbnail: p.thumb,
+        thumbnail: p.thumb || p.src,
     }));
 }
