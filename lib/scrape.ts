@@ -3,9 +3,15 @@ import type { Paper, PaperPage } from "./types";
 
 const BASE = process.env.SITE_URL || "https://eaglenews.in";
 
+const HEADERS = {
+    "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+};
+
 export async function getLatestPapers(): Promise<Paper[]> {
     const html = await fetch(`${BASE}/category/eagle-news-paper/`, {
         cache: "no-store",
+        headers: HEADERS,
     }).then((r) => r.text());
 
     const $ = cheerio.load(html);
@@ -30,6 +36,7 @@ export async function getLatestPapers(): Promise<Paper[]> {
 export async function getPaperPages(slug: string): Promise<PaperPage[]> {
     const html = await fetch(`${BASE}/${slug}/`, {
         cache: "no-store",
+        headers: HEADERS,
     }).then((r) => r.text());
 
     const $ = cheerio.load(html);
