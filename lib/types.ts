@@ -7,5 +7,5 @@ export interface Paper {
 export interface PaperPage {
     page: number;
     image: string;
-    thumbnail?: string;
+    thumbnail: string;
 }
