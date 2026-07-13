@@ -30,7 +30,7 @@ export default async function PaperPage({ params }: PageProps) {
                         <h3>Page {page.page}</h3>
 
                         <img
-                            src={page.image}
+                            src={page.thumbnail}
                             alt={`Page ${page.page}`}
                             className="page-image"
                         />
