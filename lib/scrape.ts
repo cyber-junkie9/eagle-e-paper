@@ -34,13 +34,26 @@ export async function getPaperPages(slug: string): Promise<PaperPage[]> {
 
     const $ = cheerio.load(html);
 
-    const pages = $(".flipbook-page3-bg img")
-        .map((i, el) => ({
-            page: i + 1,
-            image: $(el).attr("src") || "",
-        }))
-        .get()
-        .filter((p) => p.image);
+    const optionsAttr = $(".real3dflipbook").first().attr("data-flipbook-options");
 
-    return pages;
+    if (!optionsAttr) {
+        throw new Error(`No flipbook found on page for slug "${slug}"`);
+    }
+
+    let config: { pages?: { src: string; thumb?: string; title?: string }[] };
+
+    try {
+        config = JSON.parse(optionsAttr);
+    } catch {
+        throw new Error("Failed to parse flipbook options JSON");
+    }
+
+    if (!config.pages || config.pages.length === 0) {
+        throw new Error(`Flipbook config has no pages for slug "${slug}"`);
+    }
+
+    return config.pages.map((p, i) => ({
+        page: i + 1,
+        image: p.src,
+    }));
 }
